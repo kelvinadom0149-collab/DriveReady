@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DriveReady — Find Your Instructor</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --asphalt: #1A1D23;
+    --asphalt-light: #252930;
+    --yellow: #F5C518;
+    --yellow-soft: #FDD835;
+    --white: #F8F8F6;
+    --steel: #6B7280;
+    --steel-light: #9CA3AF;
+    --green: #22C55E;
+    --card-bg: #1E2128;
+    --border: #2E333D;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--asphalt);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(26,29,35,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.6rem; font-weight: 900; letter-spacing: 0.04em;
+    color: var(--white);
+  }
+  .logo span { color: var(--yellow); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: var(--steel-light);
+    font-size: 0.9rem; font-weight: 500; letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .btn-nav {
+    background: var(--yellow); color: var(--asphalt);
+    border: none; padding: 0.5rem 1.2rem; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .btn-nav:hover { background: var(--yellow-soft); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8rem 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: linear-gradient(135deg, #0D0F14 0%, #1A1D23 50%, #1E2128 100%);
+  }
+  /* Road signature element */
+  .road-lines {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 100%; z-index: 0;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 24px; justify-content: flex-end; padding-bottom: 0;
+    pointer-events: none;
+    animation: roadScroll 2s linear infinite;
+  }
+  .road-line {
+    width: 6px; height: 40px; background: var(--yellow);
+    border-radius: 3px; opacity: 0.18;
+    flex-shrink: 0;
+  }
+  @keyframes roadScroll {
+    0% { transform: translateX(-50%) translateY(0); }
+    100% { transform: translateX(-50%) translateY(64px); }
+  }
+
+  .hero-inner {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; text-align: center;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    background: rgba(245,197,24,0.12); color: var(--yellow);
+    border: 1px solid rgba(245,197,24,0.3);
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 0.35rem 0.9rem;
+    border-radius: 20px; margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(3.5rem, 9vw, 6.5rem);
+    font-weight: 900; line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { color: var(--yellow); font-style: normal; }
+  .hero p {
+    font-size: 1.1rem; color: var(--steel-light);
+    line-height: 1.7; max-width: 480px; margin: 0 auto 2.5rem;
+  }
+  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--yellow); color: var(--asphalt);
+    border: none; padding: 0.9rem 2rem; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1rem;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-primary:hover { background: var(--yellow-soft); transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent; color: var(--white);
+    border: 1.5px solid var(--border); padding: 0.9rem 2rem; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 1rem;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-secondary:hover { border-color: var(--steel); background: var(--card-bg); }
+
+  .hero-stats {
+    display: flex; gap: 3rem; justify-content: center;
+    margin-top: 4rem; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.4rem; font-weight: 900; color: var(--yellow);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.8rem; color: var(--steel); margin-top: 0.2rem; letter-spacing: 0.04em; }
+
+  /* ── DIVIDER ── */
+  .lane-divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 2rem 0;
+  }
+  .lane-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+  .lane-dash { width: 40px; height: 2px; background: var(--border); border-radius: 1px; }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 5rem 2rem; }
+  .section-label {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--yellow); margin-bottom: 0.6rem;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+  .section-sub { color: var(--steel-light); line-height: 1.7; max-width: 500px; }
+  .section-header { max-width: 1100px; margin: 0 auto 3rem; }
+
+  /* ── HOW IT WORKS ── */
+  .how { background: var(--asphalt); }
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5px; max-width: 1100px; margin: 0 auto;
+    border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden;
+  }
+  .step {
+    background: var(--card-bg); padding: 2.5rem 2rem;
+    position: relative; transition: background 0.2s;
+  }
+  .step:hover { background: #23272F; }
+  .step-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.2rem;
+  }
+  .step h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;
+    letter-spacing: 0.01em;
+  }
+  .step p { font-size: 0.88rem; color: var(--steel-light); line-height: 1.6; }
+
+  /* ── INSTRUCTOR MATCHING ── */
+  .match-section { background: var(--asphalt-light); }
+  .filter-bar {
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+    max-width: 1100px; margin: 0 auto 2.5rem;
+  }
+  .filter-btn {
+    background: var(--card-bg); color: var(--steel-light);
+    border: 1.5px solid var(--border); padding: 0.5rem 1.1rem;
+    border-radius: 20px; font-family: 'Inter', sans-serif;
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: rgba(245,197,24,0.1); color: var(--yellow);
+    border-color: rgba(245,197,24,0.4);
+  }
+  .instructors-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+  }
+  .instructor-card {
+    background: var(--card-bg); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 1.8rem; transition: all 0.25s;
+    cursor: pointer; position: relative; overflow: hidden;
+  }
+  .instructor-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--yellow); transform: scaleX(0);
+    transform-origin: left; transition: transform 0.3s;
+  }
+  .instructor-card:hover { border-color: rgba(245,197,24,0.4); transform: translateY(-3px); }
+  .instructor-card:hover::before { transform: scaleX(1); }
+
+  .card-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 700; flex-shrink: 0;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .card-info { flex: 1; }
+  .instructor-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.2rem; font-weight: 700; letter-spacing: 0.01em;
+  }
+  .instructor-meta { font-size: 0.8rem; color: var(--steel); margin-top: 0.15rem; }
+  .badge {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px;
+    margin-right: 0.4rem;
+  }
+  .badge-top { background: rgba(245,197,24,0.12); color: var(--yellow); }
+  .badge-available { background: rgba(34,197,94,0.12); color: var(--green); }
+  .badge-fast { background: rgba(99,102,241,0.12); color: #818CF8; }
+
+  .card-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.8rem 0; }
+  .tag {
+    font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 5px;
+    background: rgba(255,255,255,0.05); color: var(--steel-light);
+    border: 1px solid var(--border);
+  }
+  .card-rating { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; }
+  .stars { color: var(--yellow); font-size: 0.85rem; letter-spacing: 0.05em; }
+  .rating-text { font-size: 0.8rem; color: var(--steel-light); }
+  .card-price { display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 1.2rem; }
+  .price-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.8rem; font-weight: 900; color: var(--white);
+  }
+  .price-unit { font-size: 0.8rem; color: var(--steel); }
+  .btn-book {
+    width: 100%; background: rgba(245,197,24,0.08); color: var(--yellow);
+    border: 1.5px solid rgba(245,197,24,0.3); padding: 0.7rem;
+    border-radius: 8px; font-family: 'Inter', sans-serif;
+    font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-book:hover { background: var(--yellow); color: var(--asphalt); }
+
+  /* ── LESSON TYPES ── */
+  .lessons { background: var(--asphalt); }
+  .lesson-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem; max-width: 1100px; margin: 0 auto;
+  }
+  .lesson-card {
+    background: var(--card-bg); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 1.8rem;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .lesson-card:hover { border-color: rgba(245,197,24,0.3); }
+  .lesson-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .lesson-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;
+  }
+  .lesson-card p { font-size: 0.85rem; color: var(--steel-light); line-height: 1.65; margin-bottom: 1rem; }
+  .lesson-price {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem; font-weight: 700; color: var(--yellow);
+  }
+
+  /* ── BOOKING MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,12,15,0.88); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card-bg); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 480px;
+    position: relative; max-height: 90vh; overflow-y: auto;
+  }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; color: var(--steel);
+    font-size: 1.3rem; cursor: pointer; width: 32px; height: 32px;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--border); color: var(--white); }
+  .modal h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.8rem; font-weight: 900; margin-bottom: 0.3rem;
+  }
+  .modal-sub { color: var(--steel-light); font-size: 0.88rem; margin-bottom: 2rem; }
+  .form-group { margin-bottom: 1.2rem; }
+  label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: var(--steel-light); margin-bottom: 0.4rem; letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  input, select, textarea {
+    width: 100%; background: #13151A; border: 1.5px solid var(--border);
+    color: var(--white); padding: 0.75rem 1rem; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 0.92rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: rgba(245,197,24,0.5); }
+  select option { background: var(--asphalt); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .btn-submit {
+    width: 100%; background: var(--yellow); color: var(--asphalt);
+    border: none; padding: 0.95rem; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1rem;
+    cursor: pointer; transition: all 0.2s; margin-top: 0.5rem;
+  }
+  .btn-submit:hover { background: var(--yellow-soft); }
+
+  /* ── SUCCESS ── */
+  .success-msg {
+    display: none; text-align: center; padding: 1rem 0;
+  }
+  .success-msg.show { display: block; }
+  .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .success-msg h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.8rem; font-weight: 900; margin-bottom: 0.5rem;
+  }
+  .success-msg p { color: var(--steel-light); font-size: 0.9rem; }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials { background: var(--asphalt-light); }
+  .testi-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.2rem; max-width: 1100px; margin: 0 auto;
+  }
+  .testi-card {
+    background: var(--card-bg); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 1.6rem;
+  }
+  .testi-text { font-size: 0.9rem; line-height: 1.7; color: var(--white); margin-bottom: 1.2rem; }
+  .testi-text::before { content: '"'; color: var(--yellow); font-size: 1.4rem; }
+  .testi-author { display: flex; align-items: center; gap: 0.8rem; }
+  .testi-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem;
+  }
+  .testi-name { font-size: 0.85rem; font-weight: 600; }
+  .testi-role { font-size: 0.75rem; color: var(--steel); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0D0F14; padding: 3rem 2rem;
+    text-align: center; border-top: 1px solid var(--border);
+  }
+  footer .logo { margin-bottom: 1rem; display: block; }
+  footer p { color: var(--steel); font-size: 0.82rem; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    nav { padding: 0.8rem 1rem; }
+    .nav-links a:not(:last-child) { display: none; }
+    .hero { padding: 7rem 1.2rem 3rem; }
+    section { padding: 3.5rem 1.2rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero-stats { gap: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Drive<span>Ready</span></div>
+  <div class="nav-links">
+    <a href="#how">How It Works</a>
+    <a href="#instructors">Instructors</a>
+    <a href="#lessons">Lessons</a>
+    <button class="btn-nav" onclick="openBooking(null)">Book Now</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="road-lines" aria-hidden="true">
+    <div class="road-line"></div><div class="road-line"></div>
+    <div class="road-line"></div><div class="road-line"></div>
+    <div class="road-line"></div><div class="road-line"></div>
+    <div class="road-line"></div><div class="road-line"></div>
+    <div class="road-line"></div><div class="road-line"></div>
+    <div class="road-line"></div><div class="road-line"></div>
+    <div class="road-line"></div><div class="road-line"></div>
+  </div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">🚗 Accra's #1 Driving School Platform</span>
+    <h1>Learn to Drive<br><em>With Confidence</em></h1>
+    <p>Get matched with a certified instructor, book lessons that fit your schedule, and pass your test on the first try.</p>
+    <div class="hero-ctas">
+      <a href="#instructors" class="btn-primary">Find an Instructor →</a>
+      <a href="#how" class="btn-secondary">How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">2,400+</div><div class="stat-label">Students Passed</div></div>
+      <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Pass Rate</div></div>
+      <div class="stat"><div class="stat-num">140+</div><div class="stat-label">Instructors</div></div>
+      <div class="stat"><div class="stat-num">4.9★</div><div class="stat-label">Avg Rating</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-header">
+    <div class="section-label">Getting Started</div>
+    <h2 class="section-title">From Sign-Up to<br>First Drive in Hours</h2>
+    <p class="section-sub">No paperwork, no waiting weeks. Our platform matches you with the right instructor the same day.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-icon">📝</div>
+      <h3>Tell Us Your Goals</h3>
+      <p>Share your experience level, preferred schedule, and whether you want automatic or manual. Takes 90 seconds.</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">🎯</div>
+      <h3>Get Matched</h3>
+      <p>We surface instructors who fit your area, budget, and learning style. See real reviews, rates, and availability.</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">📅</div>
+      <h3>Book a Slot</h3>
+      <p>Pick a date and time directly from your instructor's live calendar. Instant confirmation, no back-and-forth.</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">🚘</div>
+      <h3>Hit the Road</h3>
+      <p>Your instructor picks you up. After each lesson you get a progress report so you know exactly what to practise.</p>
+    </div>
+  </div>
+</section>
+
+<!-- INSTRUCTOR MATCHING -->
+<section class="match-section" id="instructors">
+  <div class="section-header">
+    <div class="section-label">Find Your Match</div>
+    <h2 class="section-title">Certified Instructors<br>Ready This Week</h2>
+    <p class="section-sub">Every instructor is licensed, background-checked, and rated by real students.</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterInstructors('all', this)">All</button>
+    <button class="filter-btn" onclick="filterInstructors('beginner', this)">Beginner-Friendly</button>
+    <button class="filter-btn" onclick="filterInstructors('manual', this)">Manual</button>
+    <button class="filter-btn" onclick="filterInstructors('automatic', this)">Automatic</button>
+    <button class="filter-btn" onclick="filterInstructors('female', this)">Female Instructors</button>
+    <button class="filter-btn" onclick="filterInstructors('weekend', this)">Weekend Slots</button>
+  </div>
+
+  <div class="instructors-grid" id="instructors-grid">
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+<!-- LESSON TYPES -->
+<section class="lessons" id="lessons">
+  <div class="section-header">
+    <div class="section-label">Lesson Packages</div>
+    <h2 class="section-title">Pick the Package<br>That Suits You</h2>
+    <p class="section-sub">From your very first time behind the wheel to fine-tuning before your test day.</p>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-card">
+      <div class="lesson-icon">🌱</div>
+      <h3>Starter Pack</h3>
+      <p>5 lessons for complete beginners. You'll cover car controls, moving off, stopping, and basic road rules.</p>
+      <div class="lesson-price">GH₵ 450 <span style="color:var(--steel);font-weight:400;font-size:0.8rem">/ 5 lessons</span></div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-icon">📈</div>
+      <h3>Confidence Builder</h3>
+      <p>10 lessons. Master junctions, roundabouts, parking, and highway driving. Ideal if you've driven before.</p>
+      <div class="lesson-price">GH₵ 850 <span style="color:var(--steel);font-weight:400;font-size:0.8rem">/ 10 lessons</span></div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-icon">🏆</div>
+      <h3>Test Ready</h3>
+      <p>15 lessons + a mock test session. Full DVLA test prep: manoeuvres, hazard perception, and test-route practice.</p>
+      <div class="lesson-price">GH₵ 1,200 <span style="color:var(--steel);font-weight:400;font-size:0.8rem">/ 15 lessons</span></div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-icon">⚙️</div>
+      <h3>Manual Specialist</h3>
+      <p>Master clutch control, gear changes, and hill starts in a manual car. Available as 5- or 10-lesson bundles.</p>
+      <div class="lesson-price">From GH₵ 480</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-icon">🌙</div>
+      <h3>Night Driving</h3>
+      <p>3 dedicated evening sessions covering low-visibility driving, headlights, and night-time hazard awareness.</p>
+      <div class="lesson-price">GH₵ 320 <span style="color:var(--steel);font-weight:400;font-size:0.8rem">/ 3 sessions</span></div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-icon">1️⃣</div>
+      <h3>Single Lesson</h3>
+      <p>One 90-minute lesson, no commitment. Perfect for a refresher or to try a new instructor before committing.</p>
+      <div class="lesson-price">GH₵ 100 <span style="color:var(--steel);font-weight:400;font-size:0.8rem">/ lesson</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-header">
+    <div class="section-label">Student Stories</div>
+    <h2 class="section-title">They Passed.<br>You're Next.</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <p class="testi-text">I failed twice with another school. DriveReady matched me with Abena and I passed on my very next attempt. The progress reports after each lesson were a game-changer.</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#2D3A4A;color:#7DD3FC">KO</div>
+        <div><div class="testi-name">Kwame Osei</div><div class="testi-role">Passed — Accra Test Centre</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <p class="testi-text">As a woman I wanted a female instructor. Found one in minutes, booked for Saturday morning, and had my first lesson that weekend. So easy.</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#2D3A2A;color:#86EFAC">RA</div>
+        <div><div class="testi-name">Rita Asante</div><div class="testi-role">Currently on Lesson 7</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <p class="testi-text">Booked the Test Ready package. My instructor knew exactly which roundabouts DVLA use on the actual test route. I was completely prepared and passed first time.</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#3A2D2D;color:#FCA5A5">BM</div>
+        <div><div class="testi-name">Bernard Mensah</div><div class="testi-role">Passed First Try</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="logo">Drive<span>Ready</span></span>
+  <p>© 2026 DriveReady Ghana. Matching learners with certified instructors across Greater Accra.</p>
+</footer>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBooking()">✕</button>
+    <div id="booking-form-content">
+      <h2>Book Your Lesson</h2>
+      <p class="modal-sub" id="modal-instructor-name">Fill in your details and we'll confirm within the hour.</p>
+      <div class="form-group">
+        <label>Your Full Name</label>
+        <input type="text" placeholder="e.g. Ama Boateng" id="f-name" />
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" placeholder="+233 XX XXX XXXX" id="f-phone" />
+      </div>
+      <div class="form-group">
+        <label>Lesson Package</label>
+        <select id="f-package">
+          <option value="">Select a package…</option>
+          <option>Starter Pack — GH₵ 450</option>
+          <option>Confidence Builder — GH₵ 850</option>
+          <option>Test Ready — GH₵ 1,200</option>
+          <option>Manual Specialist — From GH₵ 480</option>
+          <option>Night Driving — GH₵ 320</option>
+          <option>Single Lesson — GH₵ 100</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Preferred Date</label>
+          <input type="date" id="f-date" />
+        </div>
+        <div class="form-group">
+          <label>Preferred Time</label>
+          <select id="f-time">
+            <option>6:00 AM</option><option>7:00 AM</option>
+            <option>8:00 AM</option><option>9:00 AM</option>
+            <option>10:00 AM</option><option>11:00 AM</option>
+            <option>12:00 PM</option><option>2:00 PM</option>
+            <option>3:00 PM</option><option>4:00 PM</option>
+            <option>5:00 PM</option><option>6:00 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Pickup Location</label>
+        <input type="text" placeholder="Your street / landmark, Accra" id="f-location" />
+      </div>
+      <div class="form-group">
+        <label>Experience Level</label>
+        <select id="f-level">
+          <option>Complete Beginner</option>
+          <option>I've driven a little</option>
+          <option>Refresher / Test prep</option>
+        </select>
+      </div>
+      <button class="btn-submit" onclick="submitBooking()">Confirm Booking →</button>
+    </div>
+    <div class="success-msg" id="success-msg">
+      <div class="success-icon">✅</div>
+      <h3>You're Booked!</h3>
+      <p>We've received your request and will call you within the hour to confirm your instructor and time.</p>
+      <br><p style="color:var(--yellow);font-weight:600">Check your phone for a confirmation SMS.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const instructors = [
+    {
+      name: "Abena Frimpong", initials: "AF", bg: "#2D3A4A", color: "#7DD3FC",
+      meta: "10 yrs experience · Accra Central", rating: 4.9, reviews: 214,
+      price: 95, tags: ["Beginner-Friendly","Automatic","Weekends"], badges: ["top","available"],
+      filters: ["beginner","automatic","weekend","female"]
+    },
+    {
+      name: "Kofi Asante", initials: "KA", bg: "#2D3A2A", color: "#86EFAC",
+      meta: "7 yrs experience · East Legon", rating: 4.8, reviews: 178,
+      price: 85, tags: ["Manual","Motorway","Evenings"], badges: ["fast"],
+      filters: ["manual","weekend"]
+    },
+    {
+      name: "Akua Mensah", initials: "AM", bg: "#3A2D3A", color: "#DDA0DD",
+      meta: "5 yrs experience · Tema", rating: 5.0, reviews: 92,
+      price: 100, tags: ["Beginner-Friendly","Automatic","Test Prep"], badges: ["top","available"],
+      filters: ["beginner","automatic","female","weekend"]
+    },
+    {
+      name: "Emmanuel Boateng", initials: "EB", bg: "#3A3A2D", color: "#FCD34D",
+      meta: "12 yrs experience · Adenta", rating: 4.9, reviews: 301,
+      price: 90, tags: ["Manual","Automatic","All Levels"], badges: ["top"],
+      filters: ["manual","automatic","beginner","weekend"]
+    },
+    {
+      name: "Yaa Darko", initials: "YD", bg: "#3A2D2D", color: "#FCA5A5",
+      meta: "4 yrs experience · Spintex", rating: 4.7, reviews: 56,
+      price: 80, tags: ["Beginner-Friendly","Flexible Hours"], badges: ["available"],
+      filters: ["beginner","automatic","female"]
+    },
+    {
+      name: "Nana Kwesi", initials: "NK", bg: "#2D3A3A", color: "#67E8F9",
+      meta: "9 yrs experience · Dansoman", rating: 4.8, reviews: 143,
+      price: 88, tags: ["Manual","Night Driving","Test Prep"], badges: ["fast"],
+      filters: ["manual","weekend"]
+    }
+  ];
+
+  let selectedInstructor = null;
+
+  function renderInstructors(list) {
+    const grid = document.getElementById('instructors-grid');
+    grid.innerHTML = list.map(ins => `
+      <div class="instructor-card" onclick="openBooking('${ins.name}')">
+        <div class="card-top">
+          <div class="avatar" style="background:${ins.bg};color:${ins.color}">${ins.initials}</div>
+          <div class="card-info">
+            <div class="instructor-name">${ins.name}</div>
+            <div class="instructor-meta">${ins.meta}</div>
+          </div>
+        </div>
+        <div style="margin-bottom:0.8rem">
+          ${ins.badges.includes('top') ? '<span class="badge badge-top">⭐ Top Rated</span>' : ''}
+          ${ins.badges.includes('available') ? '<span class="badge badge-available">● Available</span>' : ''}
+          ${ins.badges.includes('fast') ? '<span class="badge badge-fast">⚡ Fast Booker</span>' : ''}
+        </div>
+        <div class="card-tags">${ins.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <div class="card-rating">
+          <span class="stars">${'★'.repeat(Math.floor(ins.rating))}${ins.rating % 1 ? '½' : ''}</span>
+          <span class="rating-text">${ins.rating} (${ins.reviews} reviews)</span>
+        </div>
+        <div class="card-price">
+          <span class="price-num">GH₵ ${ins.price}</span>
+          <span class="price-unit">/ lesson</span>
+        </div>
+        <button class="btn-book" onclick="event.stopPropagation();openBooking('${ins.name}')">Book with ${ins.name.split(' ')[0]} →</button>
+      </div>
+    `).join('');
+  }
+
+  renderInstructors(instructors);
+
+  function filterInstructors(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (type === 'all') { renderInstructors(instructors); return; }
+    renderInstructors(instructors.filter(i => i.filters.includes(type)));
+  }
+
+  function openBooking(name) {
+    selectedInstructor = name;
+    document.getElementById('modal').classList.add('open');
+    document.getElementById('booking-form-content').style.display = 'block';
+    document.getElementById('success-msg').classList.remove('show');
+    const sub = document.getElementById('modal-instructor-name');
+    sub.textContent = name
+      ? `Booking with ${name} — fill in your details and we'll confirm within the hour.`
+      : `Fill in your details and we'll match you with the best available instructor.`;
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('f-date').setAttribute('min', today);
+  }
+
+  function closeBooking() {
+    document.getElementById('modal').classList.remove('open');
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modal')) closeBooking();
+  }
+
+  function submitBooking() {
+    const name = document.getElementById('f-name').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const pkg = document.getElementById('f-package').value;
+    const date = document.getElementById('f-date').value;
+    const loc = document.getElementById('f-location').value.trim();
+
+    if (!name || !phone || !pkg || !date || !loc) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+    document.getElementById('booking-form-content').style.display = 'none';
+    document.getElementById('success-msg').classList.add('show');
+  }
+
+  // Keyboard close
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeBooking(); });
+</script>
+</body>
+</html>
